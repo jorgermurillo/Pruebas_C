@@ -1,32 +1,34 @@
+#include "murmurhash3.h"
+//Los sgtes son #include son para el main
+#include <inttypes.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include <stdint.h>
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <inttypes.h>
 
 //THIS COME FROM wolkykim/qlibc
 
 
 bool qhashmurmur3_128(const void *data, size_t nbytes, void *retbuf);
 
-
+/*
 int main(){
 	uint64_t buffer[2];
 	
 	char  *x = "874454515nbcfcvgjdtssryfyu68481455";
-	bool one = qhashmurmur3_128( &x , 1 ,buffer);
+	bool one = qhashmurmur3_128( x , 1 ,buffer);
 	uint64_t c0 = buffer[0];
 	uint64_t c1 = buffer[1];
 	printf("%6" PRIu64 " \n",c0);
 	printf("%6" PRIu64 " \n",c1);
 }
-
+*/
 
 bool qhashmurmur3_128(const void *data, size_t nbytes, void *retbuf) {
     if (data == NULL || nbytes == 0)
