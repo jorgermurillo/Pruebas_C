@@ -54,11 +54,12 @@ int main(int argc, char *argv[]){
 
 	uint64_t T_i =0;
 
-	char *valor;
-	char *valor1 ;
+	char *valor=NULL;
+	
 	
 
-	int tiempo_i = 1;
+	uint64_t tiempo_i = 1;
+	uint64_t num_obj=1;
 	char *tiempo_i_str;	
 		
 
@@ -73,7 +74,7 @@ int main(int argc, char *argv[]){
 
 			tiempo_i_str = malloc( 20*sizeof(char) );
 			// Usar snprintf()			
-			snprintf(tiempo_i_str, 20*sizeof(char) ,"%d",tiempo_i);
+			snprintf(tiempo_i_str, 20*sizeof(char) ,"%"PRIu64"",num_obj);
 
 			
 			
@@ -81,7 +82,8 @@ int main(int argc, char *argv[]){
 			one = qhashmurmur3_128(str , length_str*sizeof(char) ,buffer);
 			
 
-			printf("Tiempo: %d \n",tiempo_i);			
+			printf("Tiempo: %"PRIu64 "\n",tiempo_i);
+					
 			printf("Objeto: %s \n",str);
 			printf("Valor hash: \n");
 			printf("%" PRIu64 " \n",buffer[0]);
@@ -111,17 +113,20 @@ int main(int argc, char *argv[]){
 			//Aqui se busca si el objeto leido esta en la tabla hash.
 			
 			if(T_i < T){	
+				printf("Num de Obj Aceptado:: %"PRIu64 "\n",num_obj);	
 				valor =(char*) g_hash_table_lookup(tabla_tiempos,str); 	
 				if(valor==NULL){
 					printf("Primera vez que esta referencia aparece \n");
 					
 					g_hash_table_insert(tabla_tiempos,str , tiempo_i_str);
 					
-					valor1 = g_hash_table_lookup(tabla_tiempos,str); 
-					printf("%s \n", valor1);
+					valor = g_hash_table_lookup(tabla_tiempos,str); 
+					printf("%s \n", valor);
+										
 					valor=NULL;
 					
-					free(tiempo_i_str);
+					
+					
 					tiempo_i_str=NULL;
 					
 				}else{
@@ -131,14 +136,16 @@ int main(int argc, char *argv[]){
 					//La sgte linea genera un segmentation fault 
 					
 					g_hash_table_replace(tabla_tiempos,str , tiempo_i_str);
-					free(tiempo_i_str);
+					//free(tiempo_i_str);
 					tiempo_i_str=NULL;
 					valor=NULL;
 										
 				};
+				
+				num_obj++;
 			}else{
 				printf("Objeto no fue aceptado :( \n");
-				free(tiempo_i_str);
+				
 				tiempo_i_str=NULL;
 			}
 			
