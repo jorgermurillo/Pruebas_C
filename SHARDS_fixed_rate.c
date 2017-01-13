@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include "murmurhash3.h"
+#include "splay.h"
 
 
 //Aqui sacaremos el modulo del noveno byte del valor del hash (osea del primer byte del segundo
@@ -17,8 +18,10 @@ int main(int argc, char *argv[]){
 		argv[1] = Parametro T (Limite para aceptar una referencia del trace)
 		argv[2] = longitud de los strings en el trace.
 	*/
-
+	
+	//GHashTable y Tree son usados para calcular la distancia de reuso
 	GHashTable* tabla_tiempos = g_hash_table_new(g_str_hash,g_str_equal);
+	Tree *tree;
 		
 	uint64_t T = (uint64_t) strtol(argv[1], NULL, 10);
 	int length_str=(int) strtol(argv[2], NULL, 10);
@@ -40,11 +43,6 @@ int main(int argc, char *argv[]){
 		
 	char *str =  malloc((length_str+1)*sizeof(char));
 
-	
-	int c;
-	int cnt=0;
-
-		
 		
 	uint64_t  buffer[2];
 	bool one;
@@ -63,32 +61,22 @@ int main(int argc, char *argv[]){
 	char *tiempo_i_str;	
 		
 
-	while( (c = fgetc(file))!=EOF ){
+	while( ( fgets(str , length_str+2 ,file))!=NULL ){
 		
-		
-		
-		
-		if(c=='\n'){
-
-			str[cnt]='\0';
-
 			tiempo_i_str = malloc( 20*sizeof(char) );
-			// Usar snprintf()			
+						
 			snprintf(tiempo_i_str, 20*sizeof(char) ,"%"PRIu64"",num_obj);
 
-			
-			
-			//Este print funciona por q todos los string tienen el mismo tamaño
 			one = qhashmurmur3_128(str , length_str*sizeof(char) ,buffer);
 			
 
 			printf("Tiempo: %"PRIu64 "\n",tiempo_i);
-					
+			tiempo_i++;
 			printf("Objeto: %s \n",str);
 			printf("Valor hash: \n");
 			printf("%" PRIu64 " \n",buffer[0]);
 			printf("%" PRIu64 " \n",buffer[1]);
-			tiempo_i++;
+			
 
 			//shifted_value = buffer[1] >> 56;
 			//shifted_value =  (buffer[1] >> (8*n)) & 0xff;
@@ -97,7 +85,7 @@ int main(int argc, char *argv[]){
 			
 			printf("Shifted value: \n");
 			printf("%" PRIu64 " \n",shifted_value);
-			//printf("%6" PRIu64 " \n",buffer[0]);
+			
 			
 			
 			//Chequeamos el modulo del hash 
@@ -105,8 +93,7 @@ int main(int argc, char *argv[]){
 
 
 			T_i = shifted_value % P;
-			//valor = "Hola";
-
+			
 			printf("Modulo: \n");
 			printf("%" PRIu64 " \n",T_i);
 
@@ -122,42 +109,47 @@ int main(int argc, char *argv[]){
 					
 					valor = g_hash_table_lookup(tabla_tiempos,str); 
 					printf("%s \n", valor);
+
+						
 										
-					valor=NULL;
 					
-					
-					
-					tiempo_i_str=NULL;
 					
 				}else{
 					
 					
 					printf("EL valor de la hash table es: %s \n", valor);
-					//La sgte linea genera un segmentation fault 
+					
+
+					//Aqui se calcula la distancia de reuso
+					
+					
+					
+
+
+
 					
 					g_hash_table_replace(tabla_tiempos,str , tiempo_i_str);
-					//free(tiempo_i_str);
-					tiempo_i_str=NULL;
-					valor=NULL;
+					
+					
 										
 				};
+				
 				
 				num_obj++;
 			}else{
 				printf("Objeto no fue aceptado :( \n");
 				
-				tiempo_i_str=NULL;
 			}
 			
+			valor=NULL;
+			tiempo_i_str=NULL;
+			
 			printf("\n");
-			//str[0]='\0';
+			
 			memset(str,0,(length_str+1)*sizeof(char));
 			//str = (char*) malloc(length_str*sizeof(char));
-			cnt =0;	
-		}else{
-			str[cnt]=c;
-			cnt++;
-		}	
+				
+		
 		
 
 	
@@ -167,5 +159,5 @@ int main(int argc, char *argv[]){
 	
 
 
-	return 0;
+	return one;
 }
