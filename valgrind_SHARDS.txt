@@ -1,0 +1,95 @@
+Argumentos leidos!! 
+16777216 
+SE CREO EL ARCHIVO!!! 
+SE ABRIO EL ARCHIVO!!! 
+Tiempo: 1 
+Objeto: HSOw4LO05Ws 
+Valor hash: 
+15682858838611315732 
+15157457224215313809 
+Shifted value: 
+15157457224215313809 
+Modulo: 
+8928657 
+Primera vez que esta referencia aparece 
+1 
+
+Tiempo: 2 
+Objeto: 1bhOE7xcZyg 
+Valor hash: 
+1245449614080385720 
+9975848668368824469 
+Shifted value: 
+9975848668368824469 
+Modulo: 
+2975893 
+Primera vez que esta referencia aparece 
+2 
+
+Tiempo: 3 
+Objeto: 3TKi92CP-vc 
+Valor hash: 
+13345007645958544045 
+2313131441152904417 
+Shifted value: 
+2313131441152904417 
+Modulo: 
+11848929 
+Objeto no fue aceptado :( 
+
+Tiempo: 4 
+Objeto: 1bhOE7xcZyg 
+Valor hash: 
+1245449614080385720 
+9975848668368824469 
+Shifted value: 
+9975848668368824469 
+Modulo: 
+2975893 
+EL valor de la hash table es:  2 
+
+Tiempo: 5 
+Objeto: 1bhOE7xcZyg 
+Valor hash: 
+1245449614080385720 
+9975848668368824469 
+Shifted value: 
+9975848668368824469 
+Modulo: 
+2975893 
+EL valor de la hash table es:  4 
+
+Tiempo: 6 
+Objeto: AH47iuMTuC8 
+Valor hash: 
+12176991876083069080 
+1743576666958230866 
+Shifted value: 
+1743576666958230866 
+Modulo: 
+11826514 
+Objeto no fue aceptado :( 
+
+Tiempo: 7 
+Objeto: Bdc_CWMnPtM 
+Valor hash: 
+13456360473301626362 
+1286276981360181592 
+Shifted value: 
+1286276981360181592 
+Modulo: 
+12337496 
+Objeto no fue aceptado :( 
+
+Tiempo: 8 
+Objeto: opsMFXnyWag 
+Valor hash: 
+8746644785344100453 
+12183992390793828718 
+Shifted value: 
+12183992390793828718 
+Modulo: 
+5511534 
+Primera vez que esta referencia aparece 
+8 
+
