@@ -223,18 +223,18 @@ int calc_distance(T timestamp, Tree *t){
 	for(;;){
 		current_key =t->key;
 		if(timestamp > current_key){
-			t=t->right;			
+			t=t.right;			
 		}else if(timestamp < current_key){
 		
 			d++;
-			Tree *tmp = t->right;
+			Tree *tmp = t.right;
 			if(tmp != NULL){
 				d = d + tmp->size;		
 			};
-			t=t->left;
+			t=t.left;
 
 		}else{
-			Tree *tmp = t->right;
+			Tree *tmp = t.right;
 			if(tmp != NULL){
 				d = d + tmp->size;		
 			};

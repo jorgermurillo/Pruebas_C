@@ -18,10 +18,12 @@ int main(int argc, char *argv[]){
 		argv[1] = Parametro T (Limite para aceptar una referencia del trace)
 		argv[2] = longitud de los strings en el trace.
 	*/
+
+	Tree *tree = NULL;
 	
 	//GHashTable y Tree son usados para calcular la distancia de reuso
 	GHashTable* tabla_tiempos = g_hash_table_new(g_str_hash,g_str_equal);
-	Tree *tree;
+	
 		
 	uint64_t T = (uint64_t) strtol(argv[1], NULL, 10);
 	int length_str=(int) strtol(argv[2], NULL, 10);
@@ -38,7 +40,7 @@ int main(int argc, char *argv[]){
 	
 
 	//file = fopen( "YouTube-Trace.dat", "r" );
-	file = fopen( "prueba2.txt", "r" );
+	file = fopen( argv[3], "r" );
 	printf("SE ABRIO EL ARCHIVO!!! \n \n \n");
 		
 	char *str =  malloc((length_str+1)*sizeof(char));
@@ -58,25 +60,26 @@ int main(int argc, char *argv[]){
 
 	uint64_t tiempo_i = 1;
 	uint64_t num_obj=1;
+	char *num_obj_str;
 	char *tiempo_i_str;	
-		
+	int distancia_reuso;	
 
 	while( ( fgets(str , length_str+2 ,file))!=NULL ){
 		
-			tiempo_i_str = malloc( 20*sizeof(char) );
+			num_obj_str = malloc( 20*sizeof(char) );
 						
-			snprintf(tiempo_i_str, 20*sizeof(char) ,"%"PRIu64"",num_obj);
+			snprintf(num_obj_str, 20*sizeof(char) ,"%"PRIu64"",num_obj);
 
 			one = qhashmurmur3_128(str , length_str*sizeof(char) ,buffer);
 			
 
-			printf("Tiempo: %"PRIu64 "\n",tiempo_i);
-			tiempo_i++;
-			printf("Objeto: %s \n",str);
+			
+			
+			printf("Objeto %"PRIu64" : %s \n",tiempo_i, str);
 			printf("Valor hash: \n");
 			printf("%" PRIu64 " \n",buffer[0]);
 			printf("%" PRIu64 " \n",buffer[1]);
-			
+			tiempo_i++;
 
 			//shifted_value = buffer[1] >> 56;
 			//shifted_value =  (buffer[1] >> (8*n)) & 0xff;
@@ -105,10 +108,11 @@ int main(int argc, char *argv[]){
 				if(valor==NULL){
 					printf("Primera vez que esta referencia aparece \n");
 					
-					g_hash_table_insert(tabla_tiempos,str , tiempo_i_str);
+					g_hash_table_insert(tabla_tiempos,str , num_obj_str);
+					tree = insert(num_obj, tree);
+					printf("La distancia de reuso es: 0 \n");
 					
-					valor = g_hash_table_lookup(tabla_tiempos,str); 
-					printf("%s \n", valor);
+					
 
 						
 										
@@ -119,7 +123,10 @@ int main(int argc, char *argv[]){
 					
 					printf("EL valor de la hash table es: %s \n", valor);
 					
-
+					distancia_reuso  = calc_distance(strtol(valor, NULL,10),tree);
+					tree = delete( strtol(valor, NULL,10), tree);
+					tree = insert(num_obj, tree);
+					printf("##La distancia de reuso es: %d \n", distancia_reuso);
 					//Aqui se calcula la distancia de reuso
 					
 					
@@ -128,7 +135,7 @@ int main(int argc, char *argv[]){
 
 
 					
-					g_hash_table_replace(tabla_tiempos,str , tiempo_i_str);
+					g_hash_table_replace(tabla_tiempos,str , num_obj_str);
 					
 					
 										
@@ -142,7 +149,7 @@ int main(int argc, char *argv[]){
 			}
 			
 			valor=NULL;
-			tiempo_i_str=NULL;
+			num_obj_str = NULL;
 			
 			printf("\n");
 			

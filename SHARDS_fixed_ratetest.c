@@ -128,7 +128,7 @@ int main(int argc, char *argv[]){
 					tree = insert(num_obj, tree);
 					printf("##La distancia de reuso es: %d \n", distancia_reuso);
 					//Aqui se calcula la distancia de reuso
-					
+					printtree(tree,2);
 					
 					
 

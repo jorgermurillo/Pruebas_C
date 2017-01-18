@@ -24,9 +24,8 @@ int main(int argc, char *argv[]){
 	
 	tree = splay(5, tree);
 	printtree(tree,3);
-	rank_str = argv[2];
-	int num_distancia = strtol(rank_str, NULL,10);
-	int dist = calc_distance(num_distancia, tree);
+
+	int dist = calc_distance(9, tree);
 
 	printf("%d \n", dist);
 	/*	
