@@ -105,6 +105,7 @@ int main(int argc, char *argv[]){
 			if(T_i < T){	
 				printf("Num de Obj Aceptado:: %"PRIu64 "\n",num_obj);	
 				valor =(char*) g_hash_table_lookup(tabla_tiempos,str); 	
+				
 				if(valor==NULL){
 					printf("Primera vez que esta referencia aparece \n");
 					
@@ -127,13 +128,6 @@ int main(int argc, char *argv[]){
 					tree = delete( strtol(valor, NULL,10), tree);
 					tree = insert(num_obj, tree);
 					printf("##La distancia de reuso es: %d \n", distancia_reuso);
-					//Aqui se calcula la distancia de reuso
-					
-					
-					
-
-
-
 					
 					g_hash_table_replace(tabla_tiempos,str , num_obj_str);
 					
@@ -154,8 +148,7 @@ int main(int argc, char *argv[]){
 			printf("\n");
 			
 			memset(str,0,(length_str+1)*sizeof(char));
-			//str = (char*) malloc(length_str*sizeof(char));
-				
+			
 		
 		
 
