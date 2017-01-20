@@ -218,7 +218,7 @@ void printtree(Tree * t, int d) {
 }
 int calc_distance(T timestamp, Tree *t){
 
-	int d = 0;
+	int d = 1;
 	int current_key=0;
 	for(;;){
 		current_key =t->key;
