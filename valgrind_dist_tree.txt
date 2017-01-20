@@ -1,0 +1,41 @@
+Objeto #     1: HSOw4LO05Ws
+Primera vez que esta referencia aparece 
+La distancia de reuso es: 0 
+
+Objeto #     2: 1bhOE7xcZyg
+Primera vez que esta referencia aparece 
+La distancia de reuso es: 0 
+
+Objeto #     3: 3TKi92CP-vc
+Primera vez que esta referencia aparece 
+La distancia de reuso es: 0 
+
+Objeto #     4: 1bhOE7xcZyg
+Esta referencia ya aparecio!!
+## La distancia de reuso es: 1 
+
+If--1Objeto #     5: 1bhOE7xcZyg
+Esta referencia ya aparecio!!
+## La distancia de reuso es: 0 
+
+If--1Objeto #     6: AH47iuMTuC8
+Primera vez que esta referencia aparece 
+La distancia de reuso es: 0 
+
+Objeto #     7: Bdc_CWMnPtM
+Primera vez que esta referencia aparece 
+La distancia de reuso es: 0 
+
+Objeto #     8: 1bhOE7xcZyg
+Esta referencia ya aparecio!!
+## La distancia de reuso es: 2 
+
+If--1Objeto #     9: opsMFXnyWag
+Primera vez que esta referencia aparece 
+La distancia de reuso es: 0 
+
+Objeto #    10: 1bhOE7xcZyg
+Esta referencia ya aparecio!!
+## La distancia de reuso es: 1 
+
+If--2

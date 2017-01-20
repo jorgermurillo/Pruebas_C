@@ -9,3 +9,5 @@ SHARDS_fixed_rate: SHARDS_fixed_rate.c
 
 distance_tree: distance_tree.c
 	$(CC) -g -Wall distance_tree.c splay.c $(CFLAGS) -o distance_tree
+dist: 
+	$(CC) -g -Wall dist.c splay.c $(CFLAGS) -o dist

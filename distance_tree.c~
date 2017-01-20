@@ -41,10 +41,10 @@ int main(int argc, char *argv[]){
 
 	while( ( fgets(str , length_str+2 ,file))!=NULL ){
 		
-		printf("Objeto #%6"PRIu64": %12s", num_obj, str); 
+		printf("Objeto #%6"PRIu64": %12s", num_obj, str);
 		num_obj_str = malloc( 20*sizeof(char) );
 		snprintf(num_obj_str, 20*sizeof(char) ,"%"PRIu64"",num_obj);
-		valor_dist= malloc(20*sizeof(char));
+		valor_dist= malloc(10*sizeof(char));
 		//Buscar el objeto en la hash-table tabla_tiempos	
 		valor =(char*) g_hash_table_lookup(tabla_tiempos,str); 
 		
