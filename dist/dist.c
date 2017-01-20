@@ -13,6 +13,7 @@ void update_dist_table(int  reuse_dist ,GHashTable **distance_table);
 
 int main(int argc, char *argv[]){
    	
+	GList *histograma;
 	
 	Tree *tree =NULL;
 	GHashTable *time_table = g_hash_table_new(g_str_hash, g_str_equal);
@@ -73,7 +74,12 @@ int main(int argc, char *argv[]){
 
 	printf("\n\n");
 	
+	histograma = g_hash_table_get_keys(distance_table);
+	histograma =g_list_sort (histograma, (GCompareFunc)g_ascii_strcasecmp);
 	
+		
+	
+	/*
 	GHashTableIter iter2;
 	void *key2, *value2;
 	
@@ -84,6 +90,7 @@ int main(int argc, char *argv[]){
   	}
 	
 	return 1;
+	*/
 }
 
 
