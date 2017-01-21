@@ -11,6 +11,15 @@ unsigned int calc_reuse_dist( char *object, unsigned int num_obj, GHashTable **t
 
 void update_dist_table(int  reuse_dist ,GHashTable **distance_table);
 
+void MRC(char *nombre_archivo, GHashTable **distance_table);
+
+
+/*
+*
+*
+*
+*/
+
 int main(int argc, char *argv[]){
    	
 	GList *histograma;
@@ -33,7 +42,7 @@ int main(int argc, char *argv[]){
 	char *dist_table_value = (char*) malloc(15*sizeof(char));
 
 	unsigned int reuse_dist=0;	
-	char *reuse_dist_str = (char*) malloc(15*sizeof(char));
+	
 	
 	FILE *file;
 	file = fopen(argv[2], "r");
@@ -63,7 +72,8 @@ int main(int argc, char *argv[]){
 	printtree(tree, 2);
 
 	printf("\n\n");	
-	GHashTableIter iter;
+	
+	/*GHashTableIter iter;
 	void *key, *value;
 	
 	g_hash_table_iter_init (&iter, time_table);
@@ -71,13 +81,28 @@ int main(int argc, char *argv[]){
  	{
     		printf("Objeto: %7s; Valor: %5s \n", (char*)key, (char*)value);
   	}	
-
+*/
 	printf("\n\n");
 	
 	histograma = g_hash_table_get_keys(distance_table);
-	histograma =g_list_sort (histograma, (GCompareFunc)g_ascii_strcasecmp);
 	
+	histograma =g_list_sort (histograma, (GCompareFunc)g_ascii_strcasecmp);
+	GList *iterador = histograma;
+	
+	//Imprimir el histograma de distancias de reuso
+	while( 1 ){
 		
+		printf("Distancia de reuso: %s ; Cantidad: %s \n", (char*)iterador->data, (char*)g_hash_table_lookup(distance_table, iterador->data));
+		iterador = iterador->next;
+		if(iterador==NULL){
+			break;
+		}
+	}	
+	
+	printf("%s \n\n\n", (char*)histograma->data);
+	
+	MRC("result.txt", &distance_table);	
+
 	
 	/*
 	GHashTableIter iter2;
@@ -88,9 +113,9 @@ int main(int argc, char *argv[]){
  	{
     		printf("Distancia: %7s; Valor: %5s \n", (char*)key2, (char*)value2);
   	}
-	
-	return 1;
 	*/
+	return 1;
+	
 }
 
 
@@ -156,3 +181,70 @@ void update_dist_table(int  reuse_dist ,GHashTable **distance_table){
 	
 	g_hash_table_insert(*distance_table, reuse_dist_str,  tmp_str);
 }
+
+void MRC(char *nombre_archivo, GHashTable **distance_table){
+
+	FILE *file = fopen(nombre_archivo, "w");	
+	
+	GList *hist = g_hash_table_get_keys(*distance_table);
+	
+	GList *miss_rates = g_hash_table_get_keys(*distance_table);
+	hist = g_list_sort (hist, (GCompareFunc)g_ascii_strcasecmp);
+	GList *iter =hist;
+	
+	
+
+	unsigned long part_sum = 0;
+	double *tmp;
+	//Aqui le asigno a total_sum el valor de de la clave 0, que equivale a Hit[infinito], para al final sumarlo a partial_sum
+	unsigned int total_sum = strtol(iter->data,NULL,10);
+	iter=iter->next;
+	while( 1 ){
+			
+		
+		part_sum = part_sum + strtol(iter->data,NULL,10);
+		tmp = (double*)malloc(sizeof(double));	
+		*tmp = part_sum; 	
+		//Storing the partilas sums in the miss_rate GList momentarily		
+		g_list_append(miss_rates,tmp);
+		
+		iter = iter->next;
+		if(iter==NULL){
+			break;
+		}
+	}
+	total_sum = total_sum + part_sum;
+	
+	// ESTE BLOQUE ES UNA PRUEBA
+	while( 1 ){
+		
+		printf("Miss Rates: %f \n", (double) strtol(hist->data,NULL,10));
+		hist = hist->next;
+		if(hist==NULL){
+			break;
+		}
+	}
+
+	
+	/*
+	hist=hist->next;
+	while( 1 ){
+		tmp = (double*)malloc(sizeof(double));	
+		
+		
+		tmp = 1.0 - ((double)(miss_rates->data))/total_sum; 
+		miss_rates->data = &tmp; 
+		fprintf(file,"%s;%f",(char *)hist->data,(float*)miss_rates->data);
+					
+		tmp = NULL;
+		miss_rates = miss_rates->next;
+		hist=hist->next;
+		if(miss_rates==NULL){
+			break;
+		}
+	}
+	*/	
+	fclose(file);	
+}	
+
+
