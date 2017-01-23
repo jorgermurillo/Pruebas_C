@@ -13,6 +13,8 @@ void update_dist_table(int  reuse_dist ,GHashTable **distance_table);
 
 void MRC(char *nombre_archivo, GHashTable **distance_table);
 
+int numerical_strcmp(const char* a, const char* b);
+
 
 /*
 *
@@ -51,7 +53,7 @@ int main(int argc, char *argv[]){
 		object[11]='\0';	
 		
 		
-		printf("Objeto #%7u: %12s \n", num_obj, object);
+		//sprintf("Objeto #%7u: %12s \n", num_obj, object);
 	
 		//Calculate Reuse distance
 		reuse_dist = calc_reuse_dist( object,  num_obj, &time_table, &tree);
@@ -73,23 +75,24 @@ int main(int argc, char *argv[]){
 
 	printf("\n\n");	
 	
-	/*GHashTableIter iter;
+	GHashTableIter iter;
 	void *key, *value;
 	
 	g_hash_table_iter_init (&iter, time_table);
 	while (g_hash_table_iter_next (&iter, &key, &value))
  	{
-    		printf("Objeto: %7s; Valor: %5s \n", (char*)key, (char*)value);
+    		printf("Objeto: %7s; Ultimo timestamp: %5s \n", (char*)key, (char*)value);
   	}	
-*/
+
 	printf("\n\n");
 	
 	histograma = g_hash_table_get_keys(distance_table);
 	
-	histograma =g_list_sort (histograma, (GCompareFunc)g_ascii_strcasecmp);
+	histograma =g_list_sort (histograma, (GCompareFunc)numerical_strcmp);
 	GList *iterador = histograma;
 	
 	//Imprimir el histograma de distancias de reuso
+		
 	while( 1 ){
 		
 		printf("Distancia de reuso: %s ; Cantidad: %s \n", (char*)iterador->data, (char*)g_hash_table_lookup(distance_table, iterador->data));
@@ -101,19 +104,10 @@ int main(int argc, char *argv[]){
 	
 	printf("%s \n\n\n", (char*)histograma->data);
 	
-	MRC("result.txt", &distance_table);	
+	MRC(argv[3], &distance_table);	
 
 	
-	/*
-	GHashTableIter iter2;
-	void *key2, *value2;
 	
-	g_hash_table_iter_init (&iter2, distance_table);
-	while (g_hash_table_iter_next (&iter2, &key2, &value2))
- 	{
-    		printf("Distancia: %7s; Valor: %5s \n", (char*)key2, (char*)value2);
-  	}
-	*/
 	return 1;
 	
 }
@@ -188,25 +182,26 @@ void MRC(char *nombre_archivo, GHashTable **distance_table){
 	
 	GList *hist = g_hash_table_get_keys(*distance_table);
 	
-	GList *miss_rates = g_hash_table_get_keys(*distance_table);
-	hist = g_list_sort (hist, (GCompareFunc)g_ascii_strcasecmp);
+
+	//hist = g_list_sort (hist, (GCompareFunc)g_ascii_strcasecmp);
+	hist = g_list_sort (hist, (GCompareFunc)numerical_strcmp);
 	GList *iter =hist;
 	
-	
+	GList *miss_rates =NULL;
 
 	unsigned long part_sum = 0;
 	double *tmp;
 	//Aqui le asigno a total_sum el valor de de la clave 0, que equivale a Hit[infinito], para al final sumarlo a partial_sum
-	unsigned int total_sum = strtol(iter->data,NULL,10);
+	unsigned int total_sum = strtol(  g_hash_table_lookup(*distance_table,iter->data)   ,NULL,10);
 	iter=iter->next;
 	while( 1 ){
 			
 		
-		part_sum = part_sum + strtol(iter->data,NULL,10);
+		part_sum = part_sum + strtol(  g_hash_table_lookup(*distance_table, iter->data )   ,NULL,10);
 		tmp = (double*)malloc(sizeof(double));	
 		*tmp = part_sum; 	
-		//Storing the partilas sums in the miss_rate GList momentarily		
-		g_list_append(miss_rates,tmp);
+		//Storing the partial sums in the miss_rate GList momentarily		
+		miss_rates = g_list_append(miss_rates,tmp);
 		
 		iter = iter->next;
 		if(iter==NULL){
@@ -214,37 +209,34 @@ void MRC(char *nombre_archivo, GHashTable **distance_table){
 		}
 	}
 	total_sum = total_sum + part_sum;
+	printf("Total sum: %u \n", total_sum);
+	tmp = NULL;
 	
 	// ESTE BLOQUE ES UNA PRUEBA
+	hist = hist->next;
 	while( 1 ){
 		
-		printf("Miss Rates: %f \n", (double) strtol(hist->data,NULL,10));
-		hist = hist->next;
-		if(hist==NULL){
-			break;
-		}
-	}
-
-	
-	/*
-	hist=hist->next;
-	while( 1 ){
-		tmp = (double*)malloc(sizeof(double));	
-		
-		
-		tmp = 1.0 - ((double)(miss_rates->data))/total_sum; 
-		miss_rates->data = &tmp; 
-		fprintf(file,"%s;%f",(char *)hist->data,(float*)miss_rates->data);
-					
-		tmp = NULL;
-		miss_rates = miss_rates->next;
+		tmp = (miss_rates->data);
+		*tmp = 1.0 - (*tmp/total_sum);
+		printf("Cache Size : %s  Miss Rates: %f \n", (char*)hist->data , (double)(*tmp) );
+		fprintf(file,"%s %f\n", (char*)hist->data , (double)(*tmp) );
 		hist=hist->next;
+		miss_rates = miss_rates->next;
 		if(miss_rates==NULL){
 			break;
 		}
 	}
-	*/	
+
+	
+		
 	fclose(file);	
 }	
 
+int numerical_strcmp(const char* a, const char* b) {
+	
+	int x = strlen(a); 
+	int y = strlen(b);	
+			
+	return (x != y) ? ((x > y) ? 1 : -1) : strcmp(a, b);
+}
 
