@@ -8,7 +8,7 @@
 #include "splay.h"
 #include "murmurhash3.h"
 
-unsigned int calc_reuse_dist( char *object, unsigned int num_obj, GHashTable **time_table, Tree **tree);
+uint64_t calc_reuse_dist( char *object, unsigned int num_obj, GHashTable **time_table, Tree **tree);
 
 void update_dist_table(int  reuse_dist ,GHashTable **distance_table);
 
@@ -29,7 +29,7 @@ int main(int argc, char *argv[]){
 		argv[2] = Threshhold value T
 		argv[3] = Trace file
 		argv[4] = file where the MRC is going to be written
-
+		argV[5] = If it exists (argc=5) and is equal to 1, SHARDS will print more pertinent data before the MRC
 	*/
 	GList *histograma;
 	
@@ -43,13 +43,14 @@ int main(int argc, char *argv[]){
 	uint64_t T = (uint64_t) strtol(argv[2], NULL, 10);
 	uint64_t P = 1;
 	P = P<<24;
-	uint64_t R = T/P;	
+	double R = T/(double)P;	
 	uint64_t  hash[2];
 	uint64_t shifted_value =0 ;	
 	uint64_t T_i =0;
 	bool one;	
 
-	unsigned int num_obj=1;
+	uint64_t total_objects=0;
+	uint64_t num_obj=1;
 	
 	
 	char *object= malloc((obj_length)*sizeof(char));
@@ -65,7 +66,7 @@ int main(int argc, char *argv[]){
  
 	while(fgets(object, obj_length+2, file)!=NULL){
 		object[11]='\0';	
-		
+		total_objects++;
 		one = qhashmurmur3_128(object ,obj_length*sizeof(char) ,hash );
 		
 		//shifted_value =  (buffer[1] >> (8*n)) & 0xff;
@@ -81,10 +82,11 @@ int main(int argc, char *argv[]){
 
 		if(T_i < T){
 			reuse_dist = calc_reuse_dist( object,  num_obj, &time_table, &tree);
-			reuse_dist = reuse_dist/(unsigned int)R;
+			reuse_dist = (uint64_t)(reuse_dist/R);
 			update_dist_table(reuse_dist , &distance_table);	
 
 			printf("%u \n", reuse_dist);
+			num_obj++;	
 		}
 		
 			
@@ -92,8 +94,9 @@ int main(int argc, char *argv[]){
 		
 		object= (char*) malloc((obj_length)*sizeof(char));
 		// num_obj++ solo debe pasar si se cumple la condicion hash(Li)% P <= T !!!!!!! 
-		num_obj++;	
+		
 	}
+	fclose(file);
 	printf("\n\n");	
 	printtree(tree, 2);
 
@@ -138,9 +141,9 @@ int main(int argc, char *argv[]){
 
 
 
-unsigned int calc_reuse_dist( char *object, unsigned int num_obj, GHashTable **time_table,  Tree **tree){
-	unsigned int timestamp=0;
-	unsigned int reuse_dist=0;
+uint64_t calc_reuse_dist( char *object, unsigned int num_obj, GHashTable **time_table,  Tree **tree){
+	uint64_t timestamp=0;
+	uint64_t reuse_dist=0;
 	char* num_obj_str = (char*) malloc(15*sizeof(char)); 
 	snprintf(num_obj_str, 15*sizeof(char), "%u", num_obj);
 	char *reuse_dist_str = (char*) malloc(15*sizeof(char));
@@ -160,9 +163,9 @@ unsigned int calc_reuse_dist( char *object, unsigned int num_obj, GHashTable **t
 				//printf("else\n");
 				//Calculate reuse distance
 				timestamp = strtol(time_table_value,NULL,10);
-				reuse_dist = calc_distance(timestamp,*tree);
+				reuse_dist =(uint64_t) calc_distance(timestamp,*tree);
 				//Busquemos la distancia de reuso en la hashtable distance_table
-				snprintf(reuse_dist_str, 15*sizeof(char), "%u", reuse_dist);
+				snprintf(reuse_dist_str, 15*sizeof(char), "%"PRIu64"", reuse_dist);
 			
 			
 			
@@ -202,7 +205,7 @@ void update_dist_table(int  reuse_dist ,GHashTable **distance_table){
 
 void MRC(char *nombre_archivo, GHashTable **distance_table){
 
-	FILE *file = fopen(nombre_archivo, "w");	
+	FILE *file = fopen(nombre_archivo, "a");	
 	
 	GList *hist = g_hash_table_get_keys(*distance_table);
 	

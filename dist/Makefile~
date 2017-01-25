@@ -8,5 +8,4 @@ dist: dist.c
 SHARDS_fixed_rate: SHARDS_fixed_rate.c
 	$(CC) -g -Wall SHARDS_fixed_rate.c splay.c murmurhash3.c $(CFLAGS) -o SHARDS_fixed_rate
 
-SHARDS_fixed_rate2: SHARDS_fixed_rate2.c
-	$(CC) -g -Wall SHARDS_fixed_rate2.c splay.c murmurhash3.c $(CFLAGS) -o SHARDS_fixed_rate2
+
