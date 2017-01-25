@@ -12,10 +12,11 @@ uint64_t calc_reuse_dist( char *object, unsigned int num_obj, GHashTable **time_
 
 void update_dist_table(int  reuse_dist ,GHashTable **distance_table);
 
-void MRC(char *nombre_archivo, GHashTable **distance_table);
+GHashTable* MRC( GHashTable **distance_table);
 
 int numerical_strcmp(const char* a, const char* b);
 
+void print_MRC(GHashTable **MRC, char *nombre_archivo, char ch);
 
 /*
 *
@@ -36,6 +37,7 @@ int main(int argc, char *argv[]){
 	Tree *tree =NULL;
 	GHashTable *time_table = g_hash_table_new(g_str_hash, g_str_equal);
 	GHashTable *distance_table = g_hash_table_new(g_str_hash, g_str_equal);
+	GHashTable *mrc = g_hash_table_new(g_str_hash, g_str_equal);
 	
 	int obj_length = (int) strtol(argv[1], NULL, 10);
 	
@@ -50,7 +52,7 @@ int main(int argc, char *argv[]){
 	bool one;	
 
 	uint64_t total_objects=0;
-	uint64_t num_obj=1;
+	uint64_t num_obj=0;
 	
 	
 	char *object= malloc((obj_length)*sizeof(char));
@@ -81,12 +83,13 @@ int main(int argc, char *argv[]){
 		//Calculate Reuse distance
 
 		if(T_i < T){
+			num_obj++;
 			reuse_dist = calc_reuse_dist( object,  num_obj, &time_table, &tree);
 			reuse_dist = (uint64_t)(reuse_dist/R);
 			update_dist_table(reuse_dist , &distance_table);	
 
 			printf("%u \n", reuse_dist);
-			num_obj++;	
+				
 		}
 		
 			
@@ -128,11 +131,26 @@ int main(int argc, char *argv[]){
 			break;
 		}
 	}	
-	
+	double fraction=0;
 	printf("%s \n\n\n", (char*)histograma->data);
+	mrc = MRC(&distance_table);	
+	if (argc==6 ){
+		FILE *file2 = fopen(argv[4],"w");
+		fprintf(file2, "T: %"PRIu64"\n", T );
+		fprintf(file2, "P: %"PRIu64"\n", P );
+		fprintf(file2, "R: %f\n", R );
+		fprintf(file2, "Total References: %"PRIu64"\n", total_objects );	
+		fprintf(file2, "Accepted References: %"PRIu64"\n", num_obj );	
+		fraction = 100* ( num_obj/((double)total_objects));
+		fprintf(file2, "Percentage of accepted references: %3.2f\n", fraction);
+		fclose(file2);	
+		print_MRC(&mrc, argv[4],'a');
+	}else{
+		print_MRC(&mrc, argv[4],'w');
+	}
 	
-	MRC(argv[4], &distance_table);	
-
+	
+	
 	
 	
 	return 1;
@@ -203,13 +221,14 @@ void update_dist_table(int  reuse_dist ,GHashTable **distance_table){
 	g_hash_table_insert(*distance_table, reuse_dist_str,  tmp_str);
 }
 
-void MRC(char *nombre_archivo, GHashTable **distance_table){
-
-	FILE *file = fopen(nombre_archivo, "a");	
+GHashTable *MRC( GHashTable **distance_table){
+	
+	char *tmp_str = (char*) malloc(15*sizeof(char));
 	
 	GList *hist = g_hash_table_get_keys(*distance_table);
+	GHashTable *MRC = g_hash_table_new(g_str_hash, g_str_equal);
+	tmp_str = (char*) malloc(15*sizeof(char));	
 	
-
 	//hist = g_list_sort (hist, (GCompareFunc)g_ascii_strcasecmp);
 	hist = g_list_sort (hist, (GCompareFunc)numerical_strcmp);
 	GList *iter =hist;
@@ -236,7 +255,7 @@ void MRC(char *nombre_archivo, GHashTable **distance_table){
 		}
 	}
 	total_sum = total_sum + part_sum;
-	printf("Total sum: %u \n", total_sum);
+	
 	tmp = NULL;
 	
 	// ESTE BLOQUE ES UNA PRUEBA
@@ -245,19 +264,56 @@ void MRC(char *nombre_archivo, GHashTable **distance_table){
 		
 		tmp = (miss_rates->data);
 		*tmp = 1.0 - (*tmp/total_sum);
-		printf("Cache Size : %s  Miss Rates: %f \n", (char*)hist->data , (double)(*tmp) );
-		fprintf(file,"%s %f\n", (char*)hist->data , (double)(*tmp) );
+		
+		
+		snprintf(tmp_str,15*sizeof(char),"%f",*tmp);
+				
+		
+		g_hash_table_insert(MRC, hist->data, tmp_str);			
+		
 		hist=hist->next;
 		miss_rates = miss_rates->next;
 		if(miss_rates==NULL){
 			break;
 		}
+		tmp_str = (char*) malloc(15*sizeof(char));
 	}
 
 	
 		
-	fclose(file);	
+	
+	return MRC;
 }	
+
+void print_MRC(GHashTable **MRC, char *nombre_archivo, char ch){
+	char *c;
+	GList *hist = g_hash_table_get_keys(*MRC);
+	hist = g_list_sort (hist, (GCompareFunc)numerical_strcmp);
+	if(ch=='a'){		
+		c = "a";
+	}else {
+		c="w";
+	}
+	FILE *file = fopen(nombre_archivo, c);
+	char* tmp = (char*) malloc(15*sizeof(char));		
+	
+	while( 1 ){
+		
+		tmp = g_hash_table_lookup(*MRC, hist->data);
+		
+		fprintf(file,"%s %s\n", (char*)hist->data , tmp );
+		
+		
+		hist=hist->next;
+		
+		if(hist==NULL){
+			break;
+		}
+		tmp = (char*) malloc(15*sizeof(char));
+	}
+	fclose(file);	
+
+}
 
 int numerical_strcmp(const char* a, const char* b) {
 	

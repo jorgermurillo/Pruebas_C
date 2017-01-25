@@ -52,7 +52,7 @@ int main(int argc, char *argv[]){
 	bool one;	
 
 	uint64_t total_objects=0;
-	uint64_t num_obj=1;
+	uint64_t num_obj=0;
 	
 	
 	char *object= malloc((obj_length)*sizeof(char));
@@ -83,12 +83,13 @@ int main(int argc, char *argv[]){
 		//Calculate Reuse distance
 
 		if(T_i < T){
+			num_obj++;
 			reuse_dist = calc_reuse_dist( object,  num_obj, &time_table, &tree);
 			reuse_dist = (uint64_t)(reuse_dist/R);
 			update_dist_table(reuse_dist , &distance_table);	
 
 			printf("%u \n", reuse_dist);
-			num_obj++;	
+				
 		}
 		
 			
@@ -130,7 +131,7 @@ int main(int argc, char *argv[]){
 			break;
 		}
 	}	
-	
+	double fraction=0;
 	printf("%s \n\n\n", (char*)histograma->data);
 	mrc = MRC(&distance_table);	
 	if (argc==6 ){
@@ -140,7 +141,8 @@ int main(int argc, char *argv[]){
 		fprintf(file2, "R: %f\n", R );
 		fprintf(file2, "Total References: %"PRIu64"\n", total_objects );	
 		fprintf(file2, "Accepted References: %"PRIu64"\n", num_obj );	
-		fprintf(file2, "Percentage of accepted references: %"PRIu64"\n",  num_obj/total_objects);
+		fraction = 100* ( num_obj/((double)total_objects));
+		fprintf(file2, "Percentage of accepted references: %3.2f\n", fraction);
 		fclose(file2);	
 		print_MRC(&mrc, argv[4],'a');
 	}else{
