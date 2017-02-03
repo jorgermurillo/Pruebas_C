@@ -10,7 +10,7 @@
 
 uint64_t calc_reuse_dist( char *object, unsigned int num_obj, GHashTable **time_table, Tree **tree);
 
-void update_dist_table(int  reuse_dist ,GHashTable **distance_table);
+void update_dist_table(int  reuse_dist ,GHashTable *distance_table);
 
 GHashTable* MRC( GHashTable **distance_table);
 
@@ -86,7 +86,7 @@ int main(int argc, char *argv[]){
 			num_obj++;
 			reuse_dist = calc_reuse_dist( object,  num_obj, &time_table, &tree);
 			reuse_dist = (uint64_t)(reuse_dist/R);
-			update_dist_table(reuse_dist , &distance_table);	
+			update_dist_table(reuse_dist , distance_table);	
 
 			printf("%u \n", reuse_dist);
 				
@@ -207,13 +207,14 @@ uint64_t calc_reuse_dist( char *object, unsigned int num_obj, GHashTable **time_
 
 }
 
-void update_dist_table(int  reuse_dist ,GHashTable **distance_table){
-
+void update_dist_table(int  reuse_dist ,GHashTable *distance_table){
+	
+	GHashTable *dummy= distance_table;
 	char *reuse_dist_str = (char*) malloc(15*sizeof(char));
 	int tmp =0;
 	snprintf(reuse_dist_str,15*sizeof(char),"%u", reuse_dist);
 	
-	char *tmp_str = g_hash_table_lookup(*distance_table, reuse_dist_str); 
+	char *tmp_str = g_hash_table_lookup(dummy, reuse_dist_str); 
 	if(tmp_str!=NULL){
 		tmp = strtol(tmp_str,NULL,10);
 		tmp++;
@@ -223,7 +224,8 @@ void update_dist_table(int  reuse_dist ,GHashTable **distance_table){
 	tmp_str = (char*) malloc(15*sizeof(char));
 	snprintf(tmp_str,15*sizeof(char),"%u",tmp);
 	
-	g_hash_table_insert(*distance_table, reuse_dist_str,  tmp_str);
+	g_hash_table_insert(dummy, reuse_dist_str,  tmp_str);
+	distance_table = dummy;
 }
 
 GHashTable *MRC( GHashTable **distance_table){

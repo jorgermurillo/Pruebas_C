@@ -35,8 +35,8 @@ int main(int argc, char *argv[]){
 	GList *histograma;
 	
 	Tree *tree =NULL;
-	GHashTable *time_table = g_hash_table_new(g_str_hash, g_str_equal);
-	GHashTable *distance_table = g_hash_table_new(g_str_hash, g_str_equal);
+	GHashTable *time_table = g_hash_table_new_full(g_str_hash, g_str_equal,NULL, ( GDestroyNotify )free);
+	GHashTable *distance_table = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, ( GDestroyNotify )free);
 	GHashTable *mrc = g_hash_table_new(g_str_hash, g_str_equal);
 	
 	int obj_length = (int) strtol(argv[1], NULL, 10);
@@ -55,7 +55,7 @@ int main(int argc, char *argv[]){
 	uint64_t num_obj=0;
 	
 	
-	char *object= malloc((obj_length)*sizeof(char));
+	char *object= malloc((obj_length+1)*sizeof(char));
 
 	
 	
@@ -121,6 +121,8 @@ int main(int argc, char *argv[]){
 	histograma =g_list_sort (histograma, (GCompareFunc)numerical_strcmp);
 	GList *iterador = histograma;
 	
+	
+	
 	//Imprimir el histograma de distancias de reuso
 		
 	while( 1 ){
@@ -165,15 +167,18 @@ uint64_t calc_reuse_dist( char *object, unsigned int num_obj, GHashTable **time_
 	char* num_obj_str = (char*) malloc(15*sizeof(char)); 
 	snprintf(num_obj_str, 15*sizeof(char), "%u", num_obj);
 	char *reuse_dist_str = (char*) malloc(15*sizeof(char));
-	char *time_table_value = (char*) malloc(15*sizeof(char));
+	char *time_table_value ;
 
-	time_table_value = g_hash_table_lookup(*time_table, object);
+	time_table_value = (char*)g_hash_table_lookup(*time_table, object);
 	
 	if(time_table_value==NULL){
+				
+				//AQUI ES DONDE EL SET DE <Li, Ti> puede pasar el maximo de objetos que esta permitido
+
 				//printf("if\n");
 				g_hash_table_insert(*time_table, object,  num_obj_str);
 				*tree = insert(strtol(num_obj_str,NULL,10) ,*tree);
-				//En la tabla de distancioas de reuso, la clave de 0 equivaler a la clave 'infinito'
+				//En la tabla de distancias de reuso, la clave de 0 equivaler a la clave 'infinito'
 				reuse_dist = 0;
 			
 			
@@ -194,7 +199,7 @@ uint64_t calc_reuse_dist( char *object, unsigned int num_obj, GHashTable **time_
 					
 				//Insert new timestamp from tree
 				*tree = insert(strtol(num_obj_str,NULL,10) ,*tree);
-				g_hash_table_replace(*time_table, object, num_obj_str);	
+				g_hash_table_insert(*time_table, object, num_obj_str);	
 
 	}
 	

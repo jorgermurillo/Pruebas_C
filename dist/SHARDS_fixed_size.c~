@@ -27,25 +27,32 @@ void print_MRC(GHashTable **MRC, char *nombre_archivo, char ch);
 int main(int argc, char *argv[]){
    	/* Arguments
 		argv[1] = length of each object in the trace (number of characters)
-		argv[2] = Threshhold value T
+		argv[2] = value of R
 		argv[3] = Trace file
 		argv[4] = file where the MRC is going to be written
+		
 		argV[5] = If it exists (argc=5) and is equal to 1, SHARDS will print more pertinent data before the MRC
 	*/
 	GList *histograma;
 	
 	Tree *tree =NULL;
-	GHashTable *time_table = g_hash_table_new_full(g_str_hash, g_str_equal,NULL, ( GDestroyNotify )free);
-	GHashTable *distance_table = g_hash_table_new_full(g_str_hash, g_str_equal, NULL, ( GDestroyNotify )free);
+	GHashTable *time_table = g_hash_table_new_full(g_str_hash, g_str_equal,( GDestroyNotify )free, ( GDestroyNotify )free);
+	GHashTable *distance_table = g_hash_table_new_full(g_str_hash, g_str_equal, ( GDestroyNotify )free, ( GDestroyNotify )free);
 	GHashTable *mrc = g_hash_table_new(g_str_hash, g_str_equal);
+
+	//Next two data structures and variable are used for representing the Set S containing elelements <Li, Ti>
+	Tree *set_Ti = NULL;
+	GHashTable *set_Li =  g_hash_table_new_full(g_str_hash, g_str_equal,NULL, ( GDestroyNotify )free);
+	unsigned int capacity = ;
 	
+
 	int obj_length = (int) strtol(argv[1], NULL, 10);
 	
 	
-	uint64_t T = (uint64_t) strtol(argv[2], NULL, 10);
+	double R = strtod(argv[2], NULL);
 	uint64_t P = 1;
 	P = P<<24;
-	double R = T/(double)P;	
+	uint64_t T = (uint64_t)R*P;	
 	uint64_t  hash[2];
 	uint64_t shifted_value =0 ;	
 	uint64_t T_i =0;
